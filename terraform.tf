@@ -7,6 +7,12 @@ terraform {
       version = "3.70.0"
     }
   }
+
+  backend "s3" {
+    bucket = "terraform-workspace-type" # 私用アカウント
+    key    = "terraform-workspace-type"
+    region = "ap-northeast-1"
+  }
 }
 
 provider "aws" {
