@@ -1,5 +1,4 @@
-ARG TF_VER=1.1.2
-FROM hashicorp/terraform:${TF_VER}
+FROM hashicorp/terraform:1.1.2
 
 ARG GLIBC_VER=2.34-r0
 ARG TFCMT_VER=2.1.0
