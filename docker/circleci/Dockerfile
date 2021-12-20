@@ -34,4 +34,4 @@ RUN apk update \
   && rm -rf /var/cache/apk/*
 
 CMD ["/bin/sh"]
-# ENTRYPOINT [""] 元のイメージを上書きしちゃってるので最終的には消さないといけない
+# ENTRYPOINT [""] 元のイメージを上書きしちゃってるので最終的には消さないといけない? よくわかってない。
