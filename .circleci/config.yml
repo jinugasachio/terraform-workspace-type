@@ -1,26 +1,41 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+executors:
+  terraform:
+    resource_class: small
+    shell: /bin/bash -eo pipefail
+    working_directory: ~/terraform-workspace-type
     docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      - image: jinugasachio/circleci-terraform:1.1.2
+
+jobs:
+  assume_role:
+    executor: terraform
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+      - run: 
+          name: Assume role
+          command: ./scripts/circleci/assume_role.sh
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - aws_sts_credentials.json
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  export_credentials:
+    executor: terraform
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Export credentials
+          command: ./scripts/circleci/export_credentials.sh
+  
 workflows:
-  say-hello-workflow:
+  version: 2
+  terraform_workflow:
     jobs:
-      - say-hello
+      - assume_role
+      - export_credentials:
+          requires:
+            - assume_role
