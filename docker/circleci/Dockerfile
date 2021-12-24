@@ -3,8 +3,10 @@ FROM hashicorp/terraform:1.1.2
 ARG GLIBC_VER=2.34-r0
 ARG TFCMT_VER=2.1.0
 ARG TFLINT_VER=0.34.0
+ARG TFSEC_VER=0.63.1
 RUN apk update \
   && apk --no-cache add curl \
+  # awscli
   && curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub \
   && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
   && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-bin-${GLIBC_VER}.apk \
@@ -12,11 +14,18 @@ RUN apk update \
   && curl -sL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip \
   && unzip awscliv2.zip \
   && aws/install \
+  # tfcmt
   && curl -sL https://github.com/suzuki-shunsuke/tfcmt/releases/download/v${TFCMT_VER}/tfcmt_linux_amd64.tar.gz -o tfcmt.tar.gz \
   && tar -C /usr/local/bin -xzf ./tfcmt.tar.gz \
+  # tflint
   && curl -sL https://github.com/terraform-linters/tflint/releases/download/v${TFLINT_VER}/tflint_linux_amd64.zip -o tflint.zip \
   && unzip tflint.zip \
   && mv tflint /usr/local/bin/tflint \
+  # tfsec
+  && curl -sLO https://github.com/aquasecurity/tfsec/releases/download/v${TFSEC_VER}/tfsec-linux-amd64 \
+  && chmod +x tfsec-linux-amd64 \
+  && mv tfsec-linux-amd64 /usr/local/bin/tfsec \
+  # remove unnecesary files
   && rm -rf \
       awscliv2.zip \
       aws \ 
@@ -32,5 +41,5 @@ RUN apk update \
   && apk --no-cache del curl \
   && rm -rf /var/cache/apk/*
 
-CMD ["/bin/sh"]
-# ENTRYPOINT [""] 元のイメージを上書きしちゃってるので最終的には消さないといけない? よくわかってない。
+CMD ["/bin/ash"]
+ENTRYPOINT [""]
