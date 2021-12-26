@@ -4,7 +4,7 @@ executors:
   terraform:
     resource_class: small
     shell: /bin/bash -eo pipefail
-    working_directory: ~/terraform-workspace-type
+    working_directory: /terraform-workspace-type
     docker:
       - image: jinugasachio/circleci-terraform:1.1.2
 
@@ -16,26 +16,46 @@ jobs:
       - run: 
           name: Assume role
           command: ./scripts/circleci/assume_role.sh
-      - persist_to_workspace:
+      - persist_to_workspace: # GAと違いCircleCIでは動的なmatrix buildができなそうなのでworkspace使う必要は本当はない
           root: /tmp
           paths:
             - aws_sts_credentials.json
 
-  export_credentials:
+  lint:
     executor: terraform
     steps:
       - checkout
+      - run:
+          name: Run terraform fmt
+          command: terraform fmt -diff -check -recursive .
       - attach_workspace:
           at: /tmp
       - run:
           name: Export credentials
           command: ./scripts/circleci/export_credentials.sh
+      - run:
+          name: Run tflint init
+          command: tflint --init --config ./.tflint.hcl
+      - run:
+          name: Run tflint
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/tflint.sh $changed_dirs
+
+  security_check:
+    executor: terraform
+    steps:
+      - checkout
+      - run:
+          name: Run tfsec
+          command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
   
 workflows:
   version: 2
   terraform_workflow:
     jobs:
+      # - security_check
       - assume_role
-      - export_credentials:
+      - lint:
           requires:
             - assume_role

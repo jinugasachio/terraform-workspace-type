@@ -2,7 +2,7 @@ FROM hashicorp/terraform:1.1.2
 
 ARG GLIBC_VER=2.34-r0
 ARG TFCMT_VER=2.1.0
-ARG TFLINT_VER=0.34.0
+ARG TFLINT_VER=0.34.0 # 常にterraformとのバージョンの互換性があるか確認する必要があるので注意 https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/compatibility.md
 ARG TFSEC_VER=0.63.1
 RUN apk update \
   && apk --no-cache add bash curl jq \

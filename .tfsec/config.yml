@@ -1,0 +1,8 @@
+# https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
+# severity_overrides:
+#   CUS002: ERROR
+#   aws-s3-enable-versioning: HIGH
+
+# exclude:
+#   - CUS002
+#   - aws-s3-enable-versioning
