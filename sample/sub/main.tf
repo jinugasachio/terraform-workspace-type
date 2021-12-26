@@ -3,6 +3,12 @@ resource "aws_vpc" "example" {
 }
 
 # tfsec 検知用
-resource "aws_s3_bucket" "sample/sub/bucket" {
+resource "aws_s3_bucket" "sample_sub_bucket" {
   acl = "public-read"
+}
+
+# tflint 検知用
+resource "aws_instance" "foo" {
+  ami           = "ami-0ff8a91507f77f867"
+  instance_type = "t3.small"
 }

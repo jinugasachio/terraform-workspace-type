@@ -6,3 +6,9 @@ resource "aws_vpc" "example" {
 resource "aws_s3_bucket" "bucket" {
   acl = "public-read"
 }
+
+# tflint検知用
+resource "aws_instance" "foo" {
+  ami           = "ami-0ff8a91507f77f867"
+  instance_type = "t3.small"
+}
