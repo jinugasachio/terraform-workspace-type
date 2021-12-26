@@ -16,7 +16,7 @@ jobs:
       - run: 
           name: Assume role
           command: ./scripts/circleci/assume_role.sh
-      - persist_to_workspace:
+      - persist_to_workspace: # GAと違いCircleCIでは動的なmatrix buildができなそうなのでworkspace使う必要は本当はない
           root: /tmp
           paths:
             - aws_sts_credentials.json
