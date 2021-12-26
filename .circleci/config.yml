@@ -31,10 +31,19 @@ jobs:
           name: Export credentials
           command: ./scripts/circleci/export_credentials.sh
   
+  security_check:
+    executor: terraform
+    steps:
+      - checkout
+      - run:
+          name: Run tfsec at all directories
+          command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
+  
 workflows:
   version: 2
   terraform_workflow:
     jobs:
+      - security_check
       - assume_role
       - export_credentials:
           requires:
