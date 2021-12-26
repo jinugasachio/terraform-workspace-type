@@ -35,9 +35,7 @@ jobs:
           command: ./scripts/circleci/export_credentials.sh
       - run:
           name: Run tflint init
-          command: |
-            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
-            ./scripts/circleci/tflint_init.sh $changed_dirs
+          command: tflint --init --config ./.tflint.hcl
       - run:
           name: Run tflint
           command: |
