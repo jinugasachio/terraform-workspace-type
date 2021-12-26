@@ -42,6 +42,39 @@ jobs:
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/tflint.sh $changed_dirs
 
+  terraform_plan:
+    executor: terraform
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Export credentials
+          command: ./scripts/circleci/export_credentials.sh
+      - run: aws s3 ls
+      - run:
+          name: Run terraform init
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_init.sh $changed_dirs
+      - run:
+          name: Run terraform validate
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_validate.sh $changed_dirs
+      - run:
+          name: Run terraform plan
+          command: |
+            # echo 'export PULL_REQUEST_NUMBER=${CIRCLE_PULL_REQUEST##*/}' >> $BASH_ENV
+            # source $BASH_ENV
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_plan.sh $changed_dirs
+          environment:
+            GITHUB_TOKEN: $GITHUB_TOKEN_FOR_CIRCLECI
+            PULL_REQUEST_NUMBER: ${CIRCLE_PULL_REQUEST##*/}
+            REPOSITORY_OWNER: $CIRCLE_PROJECT_USERNAME
+            REPOSITORY_NAME: $CIRCLE_PROJECT_REPONAME
+
   security_check:
     executor: terraform
     steps:
@@ -59,3 +92,6 @@ workflows:
       - lint:
           requires:
             - assume_role
+      - terraform_plan:
+          requires:
+            - lint
