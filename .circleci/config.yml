@@ -21,22 +21,35 @@ jobs:
           paths:
             - aws_sts_credentials.json
 
-  export_credentials:
+  lint:
     executor: terraform
     steps:
       - checkout
+      - run:
+          name: Run terraform fmt
+          command: terraform fmt -diff -check -recursive .
       - attach_workspace:
           at: /tmp
       - run:
           name: Export credentials
           command: ./scripts/circleci/export_credentials.sh
-  
+      - run:
+          name: Run tflint init
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/tflint_init.sh $changed_dirs
+      - run:
+          name: Run tflint
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/tflint.sh $changed_dirs
+
   security_check:
     executor: terraform
     steps:
       - checkout
       - run:
-          name: Run tfsec at all directories
+          name: Run tfsec
           command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
   
 workflows:
@@ -45,6 +58,6 @@ workflows:
     jobs:
       # - security_check
       - assume_role
-      - export_credentials:
+      - lint:
           requires:
             - assume_role
