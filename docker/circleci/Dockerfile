@@ -5,7 +5,7 @@ ARG TFCMT_VER=2.1.0
 ARG TFLINT_VER=0.34.0
 ARG TFSEC_VER=0.63.1
 RUN apk update \
-  && apk --no-cache add curl \
+  && apk --no-cache add bash curl jq \
   # awscli
   && curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub \
   && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
@@ -41,5 +41,5 @@ RUN apk update \
   && apk --no-cache del curl \
   && rm -rf /var/cache/apk/*
 
-CMD ["/bin/ash"]
+CMD ["/bin/bash"]
 ENTRYPOINT [""]
