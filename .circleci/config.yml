@@ -43,7 +43,7 @@ workflows:
   version: 2
   terraform_workflow:
     jobs:
-      - security_check
+      # - security_check
       - assume_role
       - export_credentials:
           requires:
