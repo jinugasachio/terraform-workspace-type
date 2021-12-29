@@ -1,11 +1,11 @@
-resource "aws_vpc" "e" {
-  cidr_block = "10.0.0.0/16"
-}
+// resource "aws_vpc" "e" {
+//   cidr_block = "10.0.0.0/16"
+// }
 
-# tfsec 検知用
-resource "aws_s3_bucket" "sample_sub_bucket" {
-  acl = "public-read"
-}
+// # tfsec 検知用
+// resource "aws_s3_bucket" "sample_sub_bucket" {
+//   acl = "public-read"
+// }
 
 # tflint 検知用
 // resource "aws_instance" "goo" {
