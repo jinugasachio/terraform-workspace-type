@@ -79,6 +79,7 @@ jobs:
       - attach_workspace:
           at: /tmp
       - export_aws_credentials
+      - run: curl --help
       - run:
           name: Run tflint init
           command: tflint --init --config ./.tflint.hcl
