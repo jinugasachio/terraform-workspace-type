@@ -10,6 +10,7 @@ executors:
 
 commands:
   export_aws_credentials:
+    steps:
       - run:
           name: Export AWS credentials
           command: ./scripts/circleci/export_credentials.sh
@@ -34,6 +35,13 @@ commands:
           command: |
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/terraform_plan.sh $changed_dirs
+  run_terraform_apply:
+    steps:
+      - run:
+          name: Run terraform apply
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_apply.sh $changed_dirs
 
 jobs:
   assume_role:
@@ -77,6 +85,18 @@ jobs:
       - run_terraform_init
       - run_terraform_validate
       - run_terraform_plan
+  
+  terraform_apply:
+    executor: terraform
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - export_aws_credentials
+      - run_terraform_init
+      - run_terraform_validate
+      - run_terraform_apply
+      - run_terraform_plan # apply後に差分がないことを確認したい
 
   security_check:
     executor: terraform
@@ -98,3 +118,14 @@ workflows:
       - terraform_plan:
           requires:
             - lint
+      - approve:
+          type: approval
+          requires:
+            - lint
+            - terraform_plan
+          filters:
+            branches:
+              ignore: main
+      - terraform_apply:
+          requires:
+            - approve
