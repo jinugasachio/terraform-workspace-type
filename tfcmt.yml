@@ -1,0 +1,91 @@
+templates:
+  plan_title: "## {{if eq .ExitCode 1}}:x: {{end}}Plan Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
+  apply_title: "## :{{if eq .ExitCode 0}}white_check_mark{{else}}x{{end}}: Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
+  ci_link: "{{if .Link}}[CI link]({{.Link}}){{end}}"
+  result: "{{if .Result}}<pre><code>{{ .Result }}</code></pre>{{end}}"
+  updated_resources: |
+    {{if .CreatedResources}}
+    * Create
+    {{- range .CreatedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .UpdatedResources}}
+    * Update
+    {{- range .UpdatedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .DeletedResources}}
+    * Delete
+    {{- range .DeletedResources}}
+      * {{.}}
+    {{- end}}{{end}}{{if .ReplacedResources}}
+    * Replace
+    {{- range .ReplacedResources}}
+      * {{.}}
+    {{- end}}{{end}}
+  changed_result: |
+    {{if .ChangedResult}}
+    <details><summary>Change Result (Click me)</summary>
+    {{wrapCode .ChangedResult}}
+    </details>
+    {{end}}
+  change_outside_terraform: |
+    {{if .ChangeOutsideTerraform}}
+    <details><summary>:warning: Note: Objects have changed outside of Terraform</summary>
+    {{wrapCode .ChangeOutsideTerraform}}
+    </details>
+    {{end}}
+  warning: |
+    {{if .Warning}}
+    ## :warning: Warnings :warning:
+    {{wrapCode .Warning}}
+    {{end}}
+  deletion_warning: |
+    {{if .HasDestroy}}
+    ### :warning: Resource Deletion will happen :warning:
+    This plan contains resource delete operation. Please check the plan result very carefully!
+    {{end}}
+  error_message: |
+    {{if .ErrorMessages}}
+    ## :warning: Errors
+    {{range .ErrorMessages}}
+    * {{. -}}
+    {{- end}}{{end}}
+terraform:
+  plan:
+    disable_label: true
+    template: |
+      {{template "plan_title" .}}
+      {{template "ci_link" .}}
+      {{template "deletion_warning" .}}
+      {{template "result" .}}
+      {{template "updated_resources" .}}
+      {{template "changed_result" .}}
+      {{template "change_outside_terraform" .}}
+      {{template "warning" .}}
+      {{template "error_message" .}}
+    when_add_or_update_only:
+      label: "add-or-update"
+      label_color: 1d76db # blue
+    when_destroy:
+      label: "destroy"
+      label_color: d93f0b # red
+    when_no_changes:
+      label: "no-changes"
+      label_color: 0e8a16 # green
+  apply:
+    template: |
+      {{template "apply_title" .}}
+      {{template "ci_link" .}}
+      {{template "result" .}}
+      {{template "changed_result" .}}
+      {{template "change_outside_terraform" .}}
+      {{template "warning" .}}
+      {{template "error_message" .}}
+    when_parse_error:
+      template: |
+        ## Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}
+        {{template "ci_link" .}}
+        It failed to parse the result.
+        <details><summary>Details (Click me)</summary>
+        {{wrapCode .CombinedOutput}}
+        </details>
+        

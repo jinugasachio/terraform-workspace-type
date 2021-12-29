@@ -42,6 +42,31 @@ jobs:
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/tflint.sh $changed_dirs
 
+  terraform_plan:
+    executor: terraform
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Export credentials
+          command: ./scripts/circleci/export_credentials.sh
+      - run:
+          name: Run terraform init
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_init.sh $changed_dirs
+      - run:
+          name: Run terraform validate
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_validate.sh $changed_dirs
+      - run:
+          name: Run terraform plan
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_plan.sh $changed_dirs
+
   security_check:
     executor: terraform
     steps:
@@ -59,3 +84,6 @@ workflows:
       - lint:
           requires:
             - assume_role
+      - terraform_plan:
+          requires:
+            - lint
