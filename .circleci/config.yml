@@ -13,21 +13,21 @@ commands:
       - run:
           name: Export AWS credentials
           command: ./scripts/circleci/export_credentials.sh
-  terraform_init:
+  run_terraform_init:
     steps:
       - run:
           name: Run terraform init
           command: |
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/terraform_init.sh $changed_dirs
-  terraform_validate:
+  run_terraform_validate:
     steps:
       - run:
           name: Run terraform validate
           command: |
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/terraform_validate.sh $changed_dirs
-  terraform_plan:
+  run_terraform_plan:
     steps:
       - run:
           name: Run terraform plan
@@ -74,9 +74,9 @@ jobs:
       - attach_workspace:
           at: /tmp
       - export_aws_credentials
-      - terraform_init
-      - terraform_validate
-      - terraform_plan
+      - run_terraform_init
+      - run_terraform_validate
+      - run_terraform_plan
 
   security_check:
     executor: terraform
