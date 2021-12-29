@@ -111,6 +111,9 @@ jobs:
       - run_terraform_validate
       - run_terraform_apply
       - run_terraform_plan # apply後に差分がないことを確認したい
+      - run:
+          name: Merge PR
+          command: ./scripts/circleci/merge_pr.sh
   
 workflows:
   version: 2
