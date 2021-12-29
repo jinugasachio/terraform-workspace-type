@@ -56,13 +56,18 @@ jobs:
           paths:
             - aws_sts_credentials.json
 
-  lint:
+  terraform_fmt:
     executor: terraform
     steps:
       - checkout
       - run:
           name: Run terraform fmt
           command: terraform fmt -diff -check -recursive .
+
+  lint:
+    executor: terraform
+    steps:
+      - checkout
       - attach_workspace:
           at: /tmp
       - export_aws_credentials
@@ -111,16 +116,19 @@ workflows:
   terraform_workflow:
     jobs:
       - security_check
+      - terraform_fmt
       - assume_role
       - lint:
           requires:
             - assume_role
       - terraform_plan:
           requires:
-            - lint
+            - assume_role
       - approve:
           type: approval
           requires:
+            - security_check
+            - terraform_fmt
             - lint
             - terraform_plan
           filters:
