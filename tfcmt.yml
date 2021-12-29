@@ -1,17 +1,7 @@
-ci:
-  pr:
-  - type: envsubst
-    value: "${PULL_REQUEST_NUMBER}"
-  owner:
-  - type: envsubst
-    value: "${REPOSITORY_OWNER}"
-  repo:
-  - type: envsubst
-    value: "${REPOSITORY_NAME}"
 templates:
   plan_title: "## {{if eq .ExitCode 1}}:x: {{end}}Plan Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
   apply_title: "## :{{if eq .ExitCode 0}}white_check_mark{{else}}x{{end}}: Apply Result{{if .Vars.target}} ({{.Vars.target}}){{end}}"
-  ci_link: "{{if .Link}}- [CI link]({{.Link}}){{end}}"
+  ci_link: "{{if .Link}}[CI link]({{.Link}}){{end}}"
   result: "{{if .Result}}<pre><code>{{ .Result }}</code></pre>{{end}}"
   updated_resources: |
     {{if .CreatedResources}}
@@ -61,7 +51,7 @@ templates:
     {{- end}}{{end}}
 terraform:
   plan:
-    disable_label: false
+    disable_label: true
     template: |
       {{template "plan_title" .}}
       {{template "ci_link" .}}
