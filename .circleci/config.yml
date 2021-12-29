@@ -8,6 +8,33 @@ executors:
     docker:
       - image: jinugasachio/circleci-terraform:1.1.2
 
+commands:
+  export_aws_credentials:
+      - run:
+          name: Export AWS credentials
+          command: ./scripts/circleci/export_credentials.sh
+  terraform_init:
+    steps:
+      - run:
+          name: Run terraform init
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_init.sh $changed_dirs
+  terraform_validate:
+    steps:
+      - run:
+          name: Run terraform validate
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_validate.sh $changed_dirs
+  terraform_plan:
+    steps:
+      - run:
+          name: Run terraform plan
+          command: |
+            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
+            ./scripts/circleci/terraform_plan.sh $changed_dirs
+
 jobs:
   assume_role:
     executor: terraform
@@ -30,9 +57,7 @@ jobs:
           command: terraform fmt -diff -check -recursive .
       - attach_workspace:
           at: /tmp
-      - run:
-          name: Export credentials
-          command: ./scripts/circleci/export_credentials.sh
+      - export_aws_credentials
       - run:
           name: Run tflint init
           command: tflint --init --config ./.tflint.hcl
@@ -48,24 +73,10 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp
-      - run:
-          name: Export credentials
-          command: ./scripts/circleci/export_credentials.sh
-      - run:
-          name: Run terraform init
-          command: |
-            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
-            ./scripts/circleci/terraform_init.sh $changed_dirs
-      - run:
-          name: Run terraform validate
-          command: |
-            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
-            ./scripts/circleci/terraform_validate.sh $changed_dirs
-      - run:
-          name: Run terraform plan
-          command: |
-            changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
-            ./scripts/circleci/terraform_plan.sh $changed_dirs
+      - export_aws_credentials
+      - terraform_init
+      - terraform_validate
+      - terraform_plan
 
   security_check:
     executor: terraform
@@ -79,7 +90,7 @@ workflows:
   version: 2
   terraform_workflow:
     jobs:
-      # - security_check
+      - security_check
       - assume_role
       - lint:
           requires:
