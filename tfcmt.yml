@@ -51,7 +51,7 @@ templates:
     {{- end}}{{end}}
 terraform:
   plan:
-    disable_label: true
+    disable_label: false
     template: |
       {{template "plan_title" .}}
       {{template "ci_link" .}}
