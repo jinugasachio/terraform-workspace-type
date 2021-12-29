@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -euo pipefail
 
 echo 'export AWS_ACCESS_KEY_ID=$(cat /tmp/aws_sts_credentials.json | jq -r '.AccessKeyId')' >> $BASH_ENV
 echo 'export AWS_SECRET_ACCESS_KEY=$(cat /tmp/aws_sts_credentials.json | jq -r '.SecretAccessKey')' >> $BASH_ENV

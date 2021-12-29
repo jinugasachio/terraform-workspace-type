@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -euo pipefail
 
 TARGET_DIRS=$@
 CONFIG_FILE="terraform.tf"
