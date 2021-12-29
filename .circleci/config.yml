@@ -110,7 +110,7 @@ jobs:
       - run_terraform_init
       - run_terraform_validate
       - run_terraform_apply
-      - run_terraform_plan # apply後に差分がないことを確認したい
+      # - run_terraform_plan # apply後に差分がないことを確認したいのだが、labelが上書きされるのが気に食わないので一旦保留
       - run:
           name: Merge PR
           command: ./scripts/circleci/merge_pr.sh
