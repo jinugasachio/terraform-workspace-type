@@ -3,7 +3,7 @@ version: 2.1
 executors:
   terraform:
     resource_class: small
-    shell: /bin/bash -eo pipefail
+    shell: /bin/bash -euo pipefail
     working_directory: /terraform-workspace-type
     docker:
       - image: jinugasachio/circleci-terraform:1.1.2
