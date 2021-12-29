@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -euo pipefail
 
 aws_sts_credentials="$(aws sts assume-role \
   --role-arn $AWS_ADMINISTRATOR_IAM_ROLE_ARN \

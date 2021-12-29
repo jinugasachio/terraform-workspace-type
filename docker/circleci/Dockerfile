@@ -38,7 +38,6 @@ RUN apk update \
       /usr/local/bin/README.md \
       tflint.zip \
   && find /usr/local/aws-cli/v2/current/dist/awscli/botocore/data -name examples-1.json -delete \
-  && apk --no-cache del curl \
   && rm -rf /var/cache/apk/*
 
 CMD ["/bin/bash"]
