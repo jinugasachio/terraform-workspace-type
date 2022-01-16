@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs: 
+  aqua: suzuki-shunsuke/aqua@0.1.0
+
 executors:
   terraform:
     resource_class: small
