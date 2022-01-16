@@ -2,7 +2,7 @@ FROM alpine:3.15.0
 
 ARG GLIBC_VER=2.34-r0
 RUN apk update \
-  && apk --no-cache add bash curl jq \
+  && apk --no-cache add bash curl git jq \
   # install awscli
   && curl -sL https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub -o /etc/apk/keys/sgerrand.rsa.pub \
   && curl -sLO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VER}/glibc-${GLIBC_VER}.apk \
