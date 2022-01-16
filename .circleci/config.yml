@@ -9,7 +9,7 @@ executors:
     shell: /bin/bash -euo pipefail
     working_directory: /terraform-workspace-type
     docker:
-      - image: jinugasachio/circleci-terraform:1.1.2
+      - image: jinugasachio/circleci-alpine:3.15.0
 
 commands:
   export_aws_credentials:
