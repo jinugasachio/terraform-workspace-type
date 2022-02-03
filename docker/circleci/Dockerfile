@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:1.1.4
+FROM hashicorp/terraform:1.1.5
 
 ARG GLIBC_VER=2.34-r0
 ARG TFCMT_VER=2.1.0
