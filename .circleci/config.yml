@@ -52,10 +52,10 @@ commands:
           name: Install aqua
           command: ./scripts/circleci/install_aqua.sh
       - run:
-          command: aqua -c aqua.yaml i
-      - run:
           command: |
               echo 'export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"' >> $BASH_ENV
+      - run:
+          command: aqua -c aqua.yaml i
       - run: tfenv install
       - save_cache:
           key: v2-aqua-tools--{{ checksum "aqua.yaml" }}
