@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs: 
-  aqua: suzuki-shunsuke/aqua@0.1.0
-
 executors:
   terraform:
     resource_class: small
@@ -54,6 +51,27 @@ jobs:
       - run:
           name: Run tfsec
           command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
+
+  aqua_test:
+    executor: terraform
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-aqua-tools-{{ checksum "aqua.yaml" }}
+            - v1-aqua-tools-
+      - run:
+          name: Install aqua
+          command: ./scripts/circleci/install_aqua.sh
+      - run:
+          command: aqua -c aqua.yaml i
+      - run:
+          command: |
+              echo 'export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"' >> $BASH_ENV
+      - save_cache:
+          key: v1-aqua-tools--{{ checksum "aqua.yaml" }}
+          paths:
+              - /.local/share/aquaproj-aqua/bin
 
   assume_role:
     executor: terraform
@@ -122,25 +140,26 @@ workflows:
   version: 2
   terraform_workflow:
     jobs:
-      - security_check
-      - terraform_fmt
+      # - security_check
+      # - terraform_fmt
       - assume_role
-      - lint:
-          requires:
-            - assume_role
-      - terraform_plan:
-          requires:
-            - assume_role
-      - approve:
-          type: approval
-          requires:
-            - security_check
-            - terraform_fmt
-            - lint
-            - terraform_plan
-          filters:
-            branches:
-              ignore: main
-      - terraform_apply:
-          requires:
-            - approve
+      - aqua_test
+      # - lint:
+      #     requires:
+      #       - assume_role
+      # - terraform_plan:
+      #     requires:
+      #       - assume_role
+      # - approve:
+      #     type: approval
+      #     requires:
+      #       - security_check
+      #       - terraform_fmt
+      #       - lint
+      #       - terraform_plan
+      #     filters:
+      #       branches:
+      #         ignore: main
+      # - terraform_apply:
+      #     requires:
+      #       - approve
