@@ -46,8 +46,8 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v1-aqua-tools-{{ checksum "aqua.yaml" }}
-            - v1-aqua-tools- # 部分キャッシュリストア。任意のブランチから使用される、最も新しく生成されたキャッシュをキャッシュストアから検索
+            - v2-aqua-tools-{{ checksum "aqua.yaml" }}
+            - v2-aqua-tools- # 部分キャッシュリストア。任意のブランチから使用される、最も新しく生成されたキャッシュをキャッシュストアから検索
       - run:
           name: Install aqua
           command: ./scripts/circleci/install_aqua.sh
@@ -56,8 +56,9 @@ commands:
       - run:
           command: |
               echo 'export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"' >> $BASH_ENV
+      - run: tfenv install
       - save_cache:
-          key: v1-aqua-tools--{{ checksum "aqua.yaml" }}
+          key: v2-aqua-tools--{{ checksum "aqua.yaml" }}
           paths:
               - /.local/share/aquaproj-aqua # aqua iではこの配下にインストールするのでパスはこれで良い
 
