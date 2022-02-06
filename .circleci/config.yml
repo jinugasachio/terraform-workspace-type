@@ -35,6 +35,7 @@ commands:
           command: |
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/terraform_plan.sh $changed_dirs
+            github-comment hide --config ./github-comment.yaml -k default
   run_terraform_apply:
     steps:
       - run:
