@@ -1,0 +1,2 @@
+hide:
+  default: 'Comment.HasMeta && (Comment.Meta.SHA1 != Commit.SHA1)'
