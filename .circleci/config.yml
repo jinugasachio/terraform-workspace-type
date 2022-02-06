@@ -42,24 +42,12 @@ commands:
           command: |
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/terraform_apply.sh $changed_dirs
-
-jobs:
-  security_check:
-    executor: terraform
+  setup_dependencies:
     steps:
-      - checkout
-      - run:
-          name: Run tfsec
-          command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
-
-  aqua_test:
-    executor: terraform
-    steps:
-      - checkout
       - restore_cache:
           keys:
             - v1-aqua-tools-{{ checksum "aqua.yaml" }}
-            - v1-aqua-tools-
+            - v1-aqua-tools- # 部分キャッシュリストア。任意のブランチから使用される、最も新しく生成されたキャッシュをキャッシュストアから検索
       - run:
           name: Install aqua
           command: ./scripts/circleci/install_aqua.sh
@@ -71,7 +59,17 @@ jobs:
       - save_cache:
           key: v1-aqua-tools--{{ checksum "aqua.yaml" }}
           paths:
-              - /.local/share/aquaproj-aqua/bin
+              - /.local/share/aquaproj-aqua # aqua iではこの配下にインストールするのでパスはこれで良い
+
+jobs:
+  security_check:
+    executor: terraform
+    steps:
+      - checkout
+      - setup_dependencies
+      - run:
+          name: Run tfsec
+          command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
 
   assume_role:
     executor: terraform
@@ -89,6 +87,7 @@ jobs:
     executor: terraform
     steps:
       - checkout
+      - setup_dependencies
       - run:
           name: Run terraform fmt
           command: terraform fmt -diff -check -recursive .
@@ -97,10 +96,11 @@ jobs:
     executor: terraform
     steps:
       - checkout
+      - setup_dependencies
       - attach_workspace:
           at: /tmp
       - export_aws_credentials
-      - run: curl --help
+
       - run:
           name: Run tflint init
           command: tflint --init --config ./.tflint.hcl
@@ -114,6 +114,7 @@ jobs:
     executor: terraform
     steps:
       - checkout
+      - setup_dependencies
       - attach_workspace:
           at: /tmp
       - export_aws_credentials
@@ -125,6 +126,7 @@ jobs:
     executor: terraform
     steps:
       - checkout
+      - setup_dependencies
       - attach_workspace:
           at: /tmp
       - export_aws_credentials
@@ -140,26 +142,25 @@ workflows:
   version: 2
   terraform_workflow:
     jobs:
-      # - security_check
-      # - terraform_fmt
+      - security_check
+      - terraform_fmt
       - assume_role
-      - aqua_test
-      # - lint:
-      #     requires:
-      #       - assume_role
-      # - terraform_plan:
-      #     requires:
-      #       - assume_role
-      # - approve:
-      #     type: approval
-      #     requires:
-      #       - security_check
-      #       - terraform_fmt
-      #       - lint
-      #       - terraform_plan
-      #     filters:
-      #       branches:
-      #         ignore: main
-      # - terraform_apply:
-      #     requires:
-      #       - approve
+      - lint:
+          requires:
+            - assume_role
+      - terraform_plan:
+          requires:
+            - assume_role
+      - approve:
+          type: approval
+          requires:
+            - security_check
+            - terraform_fmt
+            - lint
+            - terraform_plan
+          filters:
+            branches:
+              ignore: main
+      - terraform_apply:
+          requires:
+            - approve
