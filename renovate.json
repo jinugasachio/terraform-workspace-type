@@ -1,6 +1,8 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    "github>aquaproj/aqua-renovate-config#0.1.8",
+    "github>aquaproj/aqua-renovate-config:installer-script#0.1.8(scripts/circleci/install_aqua\\.sh)"
   ],
   "packageRules": [
     {
