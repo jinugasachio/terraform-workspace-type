@@ -7,7 +7,7 @@ registries:
 
 packages:
 - name: aquasecurity/tfsec@v1.0.11
-- name: gruntwork-io/terragrunt@v0.35.20
+- name: gruntwork-io/terragrunt@v0.36.1
 - name: suzuki-shunsuke/tfcmt@v3.0.1
 - name: suzuki-shunsuke/github-comment@v4.1.0
 - name: terraform-linters/tflint@v0.34.1
