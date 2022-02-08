@@ -71,7 +71,9 @@ jobs:
       - setup_dependencies
       - run:
           name: Run tfsec
-          command: reviewdog -conf=$CIRCLE_WORKING_DIRECTORY/.reviewdog.yaml -runners=tfsec -reporter=github-pr-review -fail-on-error=true
+          command: |
+            export REVIEWDOG_GITHUB_API_TOKEN=$GITHUB_TOKEN
+            reviewdog -conf=$CIRCLE_WORKING_DIRECTORY/.reviewdog.yaml -runners=tfsec -reporter=github-pr-review -fail-on-error=true
 
   assume_role:
     executor: terraform
