@@ -71,7 +71,7 @@ jobs:
       - setup_dependencies
       - run:
           name: Run tfsec
-          command: tfsec --force-all-dirs --config-file ./.tfsec/config.yml # この命名規則であれば自動で読み込まれるが明示しておく https://aquasecurity.github.io/tfsec/v0.63.1/getting-started/configuration/config/
+          command: reviewdog -conf=$CIRCLE_WORKING_DIRECTORY/.reviewdog.yaml -runners=tfsec -reporter=github-pr-review -fail-on-error=true
 
   assume_role:
     executor: terraform
