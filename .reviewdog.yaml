@@ -1,0 +1,6 @@
+runner:
+  tflint:
+    cmd: tflint --config ${CIRCLE_WORKING_DIRECTORY}/.tflint.hcl --format=checkstyle .
+    format: checkstyle
+    name: tflint
+    level: warning
