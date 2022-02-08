@@ -4,3 +4,8 @@ runner:
     format: checkstyle
     name: tflint
     level: warning
+  tfsec:
+    cmd: tfsec --format=json --force-all-dirs --config-file $CIRCLE_WORKING_DIRECTORY/.tfsec/config.yml . | jq -r -f ${CIRCLE_WORKING_DIRECTORY}/convert_to_rdjson.jq
+    format: rdjson
+    name: tfsec
+    level: warning
