@@ -152,7 +152,7 @@ workflows:
             - assume_role
       - terraform_plan:
           requires:
-            - assume_role
+            - lint
       - approve:
           type: approval
           requires:
