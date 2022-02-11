@@ -3,9 +3,9 @@
 // }
 
 // # tfsec 検知用
-resource "aws_s3_bucket" "bucket" {
-  acl = "public-read"
-}
+// resource "aws_s3_bucket" "bucket" {
+//   acl = "public-read"
+// }
 
 # tflint検知用
 // resource "aws_instance" "foo" {

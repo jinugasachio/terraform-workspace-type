@@ -35,7 +35,9 @@ commands:
           command: |
             changed_dirs=$(./scripts/circleci/detect_changed_dirs.sh)
             ./scripts/circleci/terraform_plan.sh $changed_dirs
-            github-comment hide --config ./github-comment.yaml --hide-key default
+            if [ "${CIRCLE_BRANCH}" != "main" ] && [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              github-comment hide --config ./github-comment.yaml --hide-key default
+            fi
   run_terraform_apply:
     steps:
       - run:
