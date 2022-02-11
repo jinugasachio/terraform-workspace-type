@@ -164,7 +164,9 @@ workflows:
             - terraform_plan
           filters:
             branches:
-              ignore: main
+              ignore:
+                - main
+                - /^renovate.*/
       - terraform_apply:
           requires:
             - approve
