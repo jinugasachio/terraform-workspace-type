@@ -9,7 +9,7 @@ packages:
 - name: aquasecurity/tfsec@v1.15.4
 - name: gruntwork-io/terragrunt@v0.36.6
 - name: reviewdog/reviewdog@v0.14.1
-- name: suzuki-shunsuke/tfcmt@v3.1.0
+- name: suzuki-shunsuke/tfcmt@v3.4.2
 - name: suzuki-shunsuke/github-comment@v4.5.2
 - name: terraform-linters/tflint@v0.35.0
 - name: tfutils/tfenv@v2.2.3
